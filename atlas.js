@@ -157,7 +157,7 @@ seigaiha(w,h,P,r){let s=BG(P[0],w,h);const R=11,dx=R*2,dy=R*.55;for(let y=-R,row
 function motif(st,w,h){return M[st.m](w,h,st.p,rng(hash(st.id)))}
 function plateSVG(st,w,h,cls=""){return `<svg class="${cls}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${motif(st,w,h)}</svg>`}
 
-/* INTERPRETATIONS: Claude's illustrated readings of each style, drawn in code */
+/* INTERPRETATIONS: illustrated readings of each style, drawn in code */
 const W=320,H=240,CX=160;
 const F={black:'"UnifrakturMaguntia",serif',cinzel:'"Cinzel",Georgia,serif',limelight:'"Limelight",Georgia,serif',pacifico:'"Pacifico",cursive',righteous:'"Righteous",sans-serif',vt:'"VT323",monospace',orbitron:'"Orbitron",sans-serif',bangers:'"Bangers",Impact,sans-serif',smythe:'"Smythe",Georgia,serif',elite:'"Special Elite","Courier New",monospace',graduate:'"Graduate",Georgia,serif',dancing:'"Dancing Script",cursive',stencil:'"Allerta Stencil",sans-serif',helv:'"Helvetica Neue",Helvetica,Arial,sans-serif',black2:'"Arial Black","Helvetica Neue",Arial,sans-serif',fraunces:'"Fraunces",Georgia,serif',atk:'"Atkinson Hyperlegible",Arial,sans-serif'};
 const FK={black:.5,cinzel:.78,limelight:.66,pacifico:.6,righteous:.62,vt:.48,orbitron:.86,bangers:.5,smythe:.48,elite:.62,graduate:.82,dancing:.48,stencil:.72,helv:.6,black2:.74,fraunces:.56,atk:.56};
@@ -672,19 +672,27 @@ function renderSheet(id){
   const conn=Object.entries(groups).filter(([,v])=>v.length).map(([k,v])=>`<div class="conn-group"><div>${legendLine(lineFor[k])}${k}</div>${v.map(([o,n])=>`<button class="go" data-go="${o}"><b>${esc(BY[o].n)}</b><small>${esc(n)}</small></button>`).join("")}</div>`).join("");
   const pairs=PAIRS.filter(p=>p[0]===id||p[1]===id);
   sheet.innerHTML=`<div class="grab"></div><div class="sheet-head"><div class="domains">${[...s.d].map(c=>`<span class="dtag" style="--c:var(${DOM[c][1]})">${esc(DOM[c][0])}</span>`).join("")}</div><button class="closebtn" data-close>Close</button></div>
-  <div class="strip">${interps(s).map(([lab,svg],i)=>`<figure><button data-art="${id}|${i}" aria-label="${lab}, enlarge">${artSVG(svg)}</button><figcaption>${lab}</figcaption></figure>`).join("")}</div><p class="stripnote">Claude’s illustrated readings of the style, drawn from its rules. Swipe for more, tap to enlarge.</p>
+  <div class="stripwrap"><button class="stripnav prev" data-strip="-1" aria-label="Previous illustration">‹</button><div class="strip">${interps(s).map(([lab,svg],i)=>`<figure><button data-art="${id}|${i}" aria-label="${lab}, enlarge">${artSVG(svg)}</button><figcaption>${lab}</figcaption></figure>`).join("")}</div><button class="stripnav next" data-strip="1" aria-label="Next illustration">›</button></div><div class="stripdots">${interps(s).map(([lab],i)=>`<button data-dot="${i}" aria-label="Show ${lab}" title="${lab}"></button>`).join("")}</div>
   <h2>${esc(s.n)}</h2><p class="era">${yrs(s)}</p><p class="sum">${esc(s.s)}</p>
   <h3>Look for</h3><ul class="look">${s.look.map(l=>`<li>${esc(l)}</li>`).join("")}</ul>
   <h3>Palette</h3><div class="swatches">${s.p.map(c=>`<div class="sw"><i style="background:${c}"></i><span>${c.toUpperCase()}</span></div>`).join("")}</div>
   ${s.x?`<h3>Across fields</h3><p class="across">${esc(s.x)}</p>`:""}
-  <h3>Your photo collection</h3><div id="gallery"></div><div class="findrow"><a href="${ddg(s)}" target="_blank" rel="noopener" style="--c:#de5833"><i></i>DuckDuckGo images</a><a href="${pin(s)}" target="_blank" rel="noopener" style="--c:#e60023"><i></i>Pinterest</a><a href="${commons(s.n+' '+FIELDQ[s.d[0]])}" target="_blank" rel="noopener" style="--c:#3366cc"><i></i>Wikimedia Commons</a></div><p class="galnote" style="margin-top:8px">Find an image, save it to your phone, then tap Add photo and put the photographer or site in the credit line.</p>
+  <h3>Your photo collection</h3><div id="gallery"></div><div class="findrow"><a href="${ddg(s)}" target="_blank" rel="noopener" style="--c:#de5833"><i></i>DuckDuckGo images</a><a href="${pin(s)}" target="_blank" rel="noopener" style="--c:#e60023"><i></i>Pinterest</a></div><p class="galnote" style="margin-top:8px">Find an image, save it to your phone, then tap Add photo and put the photographer or site in the credit line.</p>
   <h3>See it in</h3><ul class="ex">${s.ex.map(e=>`<li><a href="${commons(e)}" target="_blank" rel="noopener">${esc(e)}</a></li>`).join("")}</ul><p class="galnote" style="margin-top:8px">Each example opens a search of Wikimedia Commons, where most photos are free to reuse.</p>
   <h3>Word to know</h3><div class="vocab"><b>${esc(s.term)}</b><span>${esc(s.def)}</span></div>
   <h3>Connections</h3>${conn}
   ${pairs.length?`<h3>Often confused with</h3>${pairs.map(p=>{const o=p[0]===id?p[1]:p[0];return`<button class="go" data-cmp="${p[0]}|${p[1]}"><b>${esc(BY[o].n)}</b><small>See how to tell them apart</small></button>`}).join("")}`:""}
   <div class="btnrow"><button class="btn" data-quiz="${id}">Test yourself on this</button><button class="btn ghost" data-close>Back to the ${mode==="time"?"timeline":"map"}</button></div>`;
 }
-function afterSheet(id){renderGallery(id)}
+function afterSheet(id){renderGallery(id);initStrip()}
+function initStrip(){const st=sheet.querySelector(".strip");if(!st)return;const figs=[...st.children],dots=[...sheet.querySelectorAll(".stripdots button")],pv=sheet.querySelector(".stripnav.prev"),nx=sheet.querySelector(".stripnav.next");
+  const idx=()=>{let best=0,d=1e9;figs.forEach((f,i)=>{const x=Math.abs(f.offsetLeft-st.offsetLeft-st.scrollLeft-18);if(x<d){d=x;best=i}});return best};
+  const sync=()=>{const i=idx();dots.forEach((b,k)=>b.setAttribute("aria-current",k===i));pv.disabled=st.scrollLeft<4;nx.disabled=st.scrollLeft+st.clientWidth>=st.scrollWidth-4};
+  const go=i=>{i=Math.max(0,Math.min(figs.length-1,i));st.scrollTo({left:figs[i].offsetLeft-st.offsetLeft-18,behavior:REDUCED?"auto":"smooth"})};
+  pv.onclick=()=>go(idx()-1);nx.onclick=()=>go(idx()+1);dots.forEach((b,i)=>b.onclick=()=>go(i));
+  st.addEventListener("scroll",()=>requestAnimationFrame(sync),{passive:true});
+  st.addEventListener("wheel",e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&st.scrollWidth>st.clientWidth){const before=st.scrollLeft;st.scrollLeft+=e.deltaY;if(st.scrollLeft!==before)e.preventDefault()}},{passive:false});
+  sync()}
 function legendLine(t){const st={inf:'style="stroke:var(--inf)" stroke-width="2"',rx:'style="stroke:var(--rx)" stroke-width="2" stroke-dasharray="6 3"',rev:'style="stroke:var(--brass)" stroke-width="3" stroke-dasharray=".5 4.5" stroke-linecap="round"',kin:'style="stroke:var(--kin)" stroke-width="2"'}[t];return`<svg width="22" height="6"><line x1="2" y1="3" x2="21" y2="3" ${st}/></svg>`}
 document.addEventListener("click",e=>{
   const go=e.target.closest("[data-go]");if(go){closeCompare();if(learn.classList.contains("show"))setMode(mode);select(go.dataset.go);return}
@@ -811,7 +819,7 @@ const commons=q=>"https://commons.wikimedia.org/w/index.php?title=Special:MediaS
 let DB=null,ASSETS=null,PHOTOS={},galState="wait",showPhotos=true,pending=null;
 function updateNodePhotos(){nodesG.querySelectorAll(".node").forEach(n=>{const l=PHOTOS[n.dataset.id],img=n.querySelector(".nphoto");if(showPhotos&&l&&l.length){img.setAttribute("href","/_blob/"+l[l.length-1].asset);n.classList.add("hasphoto")}else{n.classList.remove("hasphoto")}})}
 function renderGallery(id){const g=document.getElementById("gallery");if(!g||sel!==id)return;const list=PHOTOS[id]||[];
-  if(galState==="off"){g.innerHTML=`<p class="galnote">Photo collections work when the atlas is open in Claude. Use the example links below to look up real photos meanwhile.</p>`;return}
+  if(galState==="off"){g.innerHTML=`<p class="galnote">Photos for this style are coming soon. Use the example links below to look up real photos meanwhile.</p>`;return}
   if(galState==="wait"){g.innerHTML=`<p class="galnote">Loading photos…</p>`;return}
   let h=list.length?"":`<p class="galnote">${ASSETS?`No photos yet. Add a building, outfit, room or poster you’ve found that shows ${esc(BY[id].n)}. Collecting your own examples is the fastest way to train your eye.`:"No photos have been added to this style yet."}</p>`;
   h+=`<div class="gal">${list.map((p,i)=>`<button class="ph" data-ph="${id}|${i}" aria-label="${esc(p.caption||"Photo")}"><img src="/_blob/${p.asset}" loading="lazy" alt="${esc(p.caption||BY[id].n)}"></button>`).join("")}${ASSETS?`<label class="addph"><b>+</b>Add photo<input type="file" accept="image/*" data-up="${id}"></label>`:""}</div><div id="upform"></div>`;
@@ -831,7 +839,7 @@ async function savePhoto(){if(!pending)return;const btn=document.getElementById(
 const lb=document.getElementById("lightbox");let lbState=null;
 function openLB(id,i){lbState={id,i};drawLB();lb.classList.add("show")}
 function openArt(id,i){lbState={art:1,id,i};drawLB();lb.classList.add("show")}
-function drawLB(){if(lbState.art){const a=interps(BY[lbState.id]);lbState.i=(lbState.i+a.length)%a.length;const[lab,svg]=a[lbState.i];lb.innerHTML=`<div class="lb-top"><span>${esc(BY[lbState.id].n)}: ${lab}, ${lbState.i+1} of ${a.length}</span><button data-lb="close">Close</button></div><div class="lb-img"><div class="lb-art">${artSVG(svg)}</div></div><p class="lb-cap">${lab==="Lettering"?"Lettering in the spirit of the style":lab==="Pattern"?"The style reduced to a pattern":`A ${lab.toLowerCase()} imagined in this style`}<small>Illustration by Claude, not a real example</small></p><div class="lb-nav"><button data-lb="prev">Previous</button><button data-lb="next">Next</button></div>`;return}
+function drawLB(){if(lbState.art){const a=interps(BY[lbState.id]);lbState.i=(lbState.i+a.length)%a.length;const[lab,svg]=a[lbState.i];lb.innerHTML=`<div class="lb-top"><span>${esc(BY[lbState.id].n)}: ${lab}, ${lbState.i+1} of ${a.length}</span><button data-lb="close">Close</button></div><div class="lb-img"><div class="lb-art">${artSVG(svg)}</div></div><p class="lb-cap">${lab==="Lettering"?"Lettering in the spirit of the style":lab==="Pattern"?"The style reduced to a pattern":`A ${lab.toLowerCase()} imagined in this style`}</p><div class="lb-nav"><button data-lb="prev">Previous</button><button data-lb="next">Next</button></div>`;return}
   const list=PHOTOS[lbState.id]||[];if(!list.length){lb.classList.remove("show");return}lbState.i=(lbState.i+list.length)%list.length;const p=list[lbState.i];
   lb.innerHTML=`<div class="lb-top"><span>${esc(BY[lbState.id].n)}, ${lbState.i+1} of ${list.length}</span><button data-lb="close">Close</button></div><div class="lb-img"><img src="/_blob/${p.asset}" alt="${esc(p.caption||BY[lbState.id].n)}"></div><p class="lb-cap">${esc(p.caption||"Untitled photo")}${p.credit?`<small>${esc(p.credit)}</small>`:""}</p><div class="lb-nav">${list.length>1?`<button data-lb="prev">Previous</button><button data-lb="next">Next</button>`:""}${ASSETS?`<button class="lb-del" data-lb="del">Delete photo</button>`:""}</div>`}
 lb.addEventListener("click",async e=>{const b=e.target.closest("[data-lb]");if(!b){if(e.target===lb)lb.classList.remove("show");return}const a=b.dataset.lb;
