@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="theme-color" content="#07080E">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aesthetic Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@400;700&family=Limelight&family=Pacifico&family=Righteous&family=VT323&family=Orbitron:wght@500;800&family=Bangers&family=Smythe&family=Special+Elite&family=Graduate&family=Dancing+Script:wght@600&family=Allerta+Stencil&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<header id="bar">
+  <div class="brand"><h1>Aesthetic Atlas</h1><div id="progress"></div></div>
+  <div class="views" role="tablist" aria-label="View">
+    <button role="tab" data-view="map" aria-selected="true">Map</button>
+    <button role="tab" data-view="time" aria-selected="false">Timeline</button>
+    <button role="tab" data-view="learn" aria-selected="false">Learn</button>
+  </div>
+  <div class="searchwrap">
+    <input id="q" type="search" autocomplete="off" placeholder="Search styles, terms, details" aria-label="Search styles">
+    <div id="results" role="listbox"></div>
+  </div>
+</header>
+<nav id="chips" aria-label="Filter by field"></nav>
+<main id="stage">
+  <svg id="map" aria-label="Map of aesthetics">
+    <defs>
+      <pattern id="dots" patternTransform="translate(0,0)" width="180" height="180" patternUnits="userSpaceOnUse"></pattern>
+      <marker id="m-dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5"><circle cx="5" cy="5" r="3.2" style="fill:var(--gold)"/></marker>
+      <clipPath id="nc"><circle r="26"/></clipPath>
+      <marker id="m-inf" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9z" style="fill:var(--inf)"/></marker>
+      <marker id="m-rx" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9z" style="fill:var(--rx)"/></marker>
+      <marker id="m-rev" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9z" style="fill:var(--brass)"/></marker>
+    </defs>
+    <rect class="gridbg" width="100%" height="100%"/>
+    <g id="bgfx" aria-hidden="true"></g>
+    <g id="world"><g id="lanes"></g><g id="edges"></g><g id="nodes"></g></g>
+  </svg>
+  <div id="legend">
+    <p>Tap a star to study it. Faint stars are styles you haven’t charted yet; mastered ones blaze.</p>
+    <div class="k"><svg width="34" height="8"><line x1="1" y1="4" x2="33" y2="4" style="stroke:var(--inf)" stroke-width="2"/></svg>grew into</div>
+    <div class="k"><svg width="34" height="8"><line x1="1" y1="4" x2="33" y2="4" style="stroke:var(--rx)" stroke-width="2" stroke-dasharray="7 4"/></svg>provoked a reaction</div>
+    <div class="k"><svg width="34" height="8"><line x1="2" y1="4" x2="33" y2="4" style="stroke:var(--brass)" stroke-width="3" stroke-dasharray=".5 5" stroke-linecap="round"/></svg>was revived by</div>
+    <div class="k"><svg width="34" height="8"><line x1="1" y1="4" x2="33" y2="4" style="stroke:var(--kin)" stroke-width="2"/></svg>kindred spirits</div>
+  </div>
+  <button id="fitbtn">Show all</button>
+  <aside id="sheet" aria-live="polite"></aside>
+  <section id="learn"></section>
+</main>
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo"></div>
+<div id="compare" role="dialog" aria-modal="true" aria-label="Compare two styles"></div>
+<script src="data.js"></script>
+<script src="atlas.js"></script>
+</body>
+</html>
